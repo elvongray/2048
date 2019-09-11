@@ -1,0 +1,91 @@
+$colors: #eee4da,
+  // 2
+    #eae0c8,
+  // 4
+    #f2b179,
+  // 8
+    #f59563,
+  // 16
+    #f67c5f,
+  // 32
+    #f65e3b,
+  // 64
+    #edcf72,
+  // 128
+    #edcc61,
+  // 256
+    #edc850,
+  // 512
+    #edc53f,
+  // 1024
+    #edc22e; // 2048
+
+$tile-width: 106.25px;
+$tile-count: 4;
+$tile-padding: 15px;
+
+@function power($x, $n) {
+  $ret: 1;
+
+  @if $n >= 0 {
+    @for $i from 1 through $n {
+      $ret: $ret * $x;
+    }
+  } @else {
+    @for $i from $n to 0 {
+      $ret: $ret / $x;
+    }
+  }
+
+  @return $ret;
+}
+
+.tile {
+  position: absolute;
+  width: $tile-width;
+  height: $tile-width;
+
+  @for $x from 1 through $tile-count {
+    @for $y from 1 through $tile-count {
+      $zeroOffsetX: $x - 1;
+      $zeroOffsetY: $y - 1;
+      $newX: ($tile-width) * ($zeroOffsetX) + ($tile-padding * $zeroOffsetX);
+      $newY: ($tile-width) * ($zeroOffsetY) + ($tile-padding * $zeroOffsetY);
+
+      &.tile-#{$zeroOffsetX}-#{$zeroOffsetY} {
+        transform: translate($newX, $newY);
+      }
+    }
+  }
+
+  @for $i from 1 through length($colors) {
+    &.tile-#{power(2, $i)} .tile-inner {
+      background: nth($colors, $i);
+
+      @if $i > 2 {
+        color: #f9f6f2;
+      }
+
+      @if $i > 7 {
+        font-size: 45px;
+      }
+
+      @if $i > 9 {
+        font-size: 35px;
+        box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.55556),
+          inset 0 0 0 1px rgba(255, 255, 255, 0.33333);
+      }
+    }
+  }
+
+  .tile-inner {
+    width: $tile-width;
+    height: $tile-width;
+    border-radius: 3px;
+    text-align: center;
+    font-weight: bold;
+    z-index: 10;
+    font-size: 55px;
+    line-height: 100px;
+  }
+}
