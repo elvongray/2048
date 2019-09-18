@@ -1,11 +1,17 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 
 import './grid.scss';
 
 import Tile from './tile/tile';
 
 class Grid extends Component {
+  static propTypes = {
+    tiles: PropTypes.array.isRequired,
+  };
+
   render() {
+    const { tiles } = this.props;
     const gameCells = [1, 2, 3, 4].map(key => (
       <div className="rowe" key={key}>
         <div className="column column-21" />
@@ -19,7 +25,9 @@ class Grid extends Component {
       <div className="column column-100 game-arena-container">
         <div className="grid-container">{gameCells}</div>
         <div className="tiles-container">
-          <Tile x={0} y={0} value={32} />
+          {tiles.map(tile => (
+            <Tile x={tile.x} y={tile.y} value={tile.value} key={tile.key} />
+          ))}
         </div>
       </div>
     );

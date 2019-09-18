@@ -22,7 +22,11 @@ export default props => (
       <div>
         Join the numbers and get to the <strong>2048 tile!</strong>
       </div>
-      <button type="button" className="button">
+      <button
+        type="button"
+        className="button"
+        onClick={() => props.restartGame()}
+      >
         New Game
       </button>
     </div>
