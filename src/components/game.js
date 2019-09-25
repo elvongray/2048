@@ -25,6 +25,17 @@ const get2DCoordinate = n => {
 
 const get1DCoordinate = ({ x, y }) => x + y * COLOUMNSIZE;
 
+const keys = {
+  37: 'left',
+  39: 'right',
+  38: 'up',
+  40: 'down',
+  65: 'left',
+  68: 'right',
+  87: 'up',
+  83: 'down',
+};
+
 class Game extends Component {
   state = {
     tiles: [],
@@ -33,11 +44,22 @@ class Game extends Component {
 
   componentDidMount() {
     this.initializeNewGrid();
+    window.addEventListener('keydown', this.handleKeyDown.bind(this));
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener('keydown', this.handleKeyDown.bind(this));
+  }
+
+  handleKeyDown(e) {
+    console.log(e);
   }
 
   getTile() {
+    const tile1DCoordinate = generateRandomNo(NUMOFCELLS - 1);
     return {
-      ...get2DCoordinate(generateRandomNo(NUMOFCELLS)),
+      ...get2DCoordinate(tile1DCoordinate),
+      cell: tile1DCoordinate,
       key: uuidv4(),
       value: randomTileList[generateRandomNo(9)],
     };
@@ -50,14 +72,18 @@ class Game extends Component {
   initializeNewGrid() {
     const firstTile = this.getTile();
     const secondTile = this.getTile();
+    const tiles = Array(NUMOFCELLS);
 
     if (firstTile.x === secondTile.x && firstTile.y === secondTile.y) {
       this.initializeNewGrid();
       return;
     }
 
+    tiles[firstTile.cell] = firstTile;
+    tiles[secondTile.cell] = secondTile;
+
     this.setState({
-      tiles: [firstTile, secondTile],
+      tiles,
     });
   }
 
