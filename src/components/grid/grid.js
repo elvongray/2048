@@ -25,9 +25,13 @@ class Grid extends Component {
       <div className="column column-100 game-arena-container">
         <div className="grid-container">{gameCells}</div>
         <div className="tiles-container">
-          {tiles.map(tile => (
-            <Tile x={tile.x} y={tile.y} value={tile.value} key={tile.key} />
-          ))}
+          {tiles.map(tile => {
+            if (tile) {
+              return (
+                <Tile x={tile.x} y={tile.y} value={tile.value} key={tile.key} />
+              );
+            }
+          })}
         </div>
       </div>
     );
@@ -35,3 +39,9 @@ class Grid extends Component {
 }
 
 export default Grid;
+
+[undefined, 1, 3, 4].map(value => {
+  if (value) {
+    return value;
+  }
+});

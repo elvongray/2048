@@ -1,6 +1,7 @@
 /* eslint-disable no-mixed-operators */
 import React, { Component } from 'react';
 import uuidv4 from 'uuid/v4';
+import cloneDeep from 'lodash.clonedeep';
 
 import GameInfo from './game-info/game-info';
 import Grid from './grid/grid';
@@ -53,6 +54,9 @@ class Game extends Component {
 
   handleKeyDown(e) {
     console.log(e);
+    if (keys[e.keyCode] === 'left') {
+      this.moveTilesLeft();
+    }
   }
 
   getTile() {
@@ -84,6 +88,65 @@ class Game extends Component {
 
     this.setState({
       tiles,
+    });
+  }
+
+  moveCurrentTileLeft(currentTile, newTiles, index, cell) {
+    let i = index;
+    newTiles[index] = undefined;
+
+    while (i >= cell) {
+      if (i > cell && !newTiles[i - 1]) {
+        i -= 1;
+        continue;
+      } else if (
+        newTiles[i - 1] &&
+        newTiles[i - 1].value === currentTile.value
+      ) {
+        const { x, y } = get2DCoordinate(i - 1);
+        currentTile.value += newTiles[i - 1].value;
+        newTiles[i - 1] = currentTile;
+        newTiles[i - 1].cell = i - 1;
+        newTiles[i - 1].x = x;
+        newTiles[i - 1].y = y;
+        break;
+      } else {
+        const { x, y } = get2DCoordinate(i);
+        newTiles[i] = currentTile;
+        newTiles[i].cell = i;
+        newTiles[i].x = x;
+        newTiles[i].y = y;
+        break;
+      }
+    }
+  }
+
+  moveTilesLeft() {
+    const { tiles } = this.state;
+    const newTiles = cloneDeep(tiles);
+
+    for (const [index, currentTile] of newTiles.entries()) {
+      if (!currentTile) continue;
+
+      if (index <= 3) {
+        this.moveCurrentTileLeft(currentTile, newTiles, index, 0);
+      }
+
+      if (index >= 4 && index <= 7) {
+        this.moveCurrentTileLeft(currentTile, newTiles, index, 4);
+      }
+
+      if (index >= 8 && index <= 11) {
+        this.moveCurrentTileLeft(currentTile, newTiles, index, 8);
+      }
+
+      if (index >= 12 && index <= 15) {
+        this.moveCurrentTileLeft(currentTile, newTiles, index, 12);
+      }
+    }
+
+    this.setState({
+      tiles: newTiles,
     });
   }
 
