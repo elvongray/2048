@@ -53,9 +53,14 @@ class Game extends Component {
   }
 
   handleKeyDown(e) {
-    console.log(e);
     if (keys[e.keyCode] === 'left') {
       this.moveTilesLeft();
+    } else if (keys[e.keyCode] === 'right') {
+      this.moveTilesRight();
+    } else if (keys[e.keyCode] === 'up') {
+      this.moveTilesUp();
+    } else if (keys[e.keyCode] === 'down') {
+      this.moveTilesDown();
     }
   }
 
@@ -123,7 +128,7 @@ class Game extends Component {
 
   moveTilesLeft() {
     const { tiles } = this.state;
-    const newTiles = cloneDeep(tiles);
+    let newTiles = cloneDeep(tiles);
 
     for (const [index, currentTile] of newTiles.entries()) {
       if (!currentTile) continue;
@@ -142,6 +147,175 @@ class Game extends Component {
 
       if (index >= 12 && index <= 15) {
         this.moveCurrentTileLeft(currentTile, newTiles, index, 12);
+      }
+    }
+
+    this.setState({
+      tiles: newTiles,
+    });
+  }
+
+  moveCurrentTileRight(currentTile, newTiles, index, cell) {
+    let i = index;
+    newTiles[index] = undefined;
+
+    while (i <= cell) {
+      if (i < cell && !newTiles[i + 1]) {
+        i += 1;
+        continue;
+      } else if (
+        newTiles[i + 1] &&
+        newTiles[i + 1].value === currentTile.value
+      ) {
+        const { x, y } = get2DCoordinate(i + 1);
+        currentTile.value += newTiles[i + 1].value;
+        newTiles[i + 1] = currentTile;
+        newTiles[i + 1].cell = i + 1;
+        newTiles[i + 1].x = x;
+        newTiles[i + 1].y = y;
+        break;
+      } else {
+        const { x, y } = get2DCoordinate(i);
+        newTiles[i] = currentTile;
+        newTiles[i].cell = i;
+        newTiles[i].x = x;
+        newTiles[i].y = y;
+        break;
+      }
+    }
+  }
+
+  moveTilesRight() {
+    const { tiles } = this.state;
+    let newTiles = cloneDeep(tiles);
+
+    for (let i = newTiles.length - 1; i >= 0; i--) {
+      const currentTile = newTiles[i];
+      if (!currentTile) continue;
+
+      if (i >= 12 && i <= 15) {
+        this.moveCurrentTileRight(currentTile, newTiles, i, 15);
+      } else if (i >= 8 && i <= 11) {
+        this.moveCurrentTileRight(currentTile, newTiles, i, 11);
+      } else if (i >= 4 && i <= 7) {
+        this.moveCurrentTileRight(currentTile, newTiles, i, 7);
+      } else if (i <= 3) {
+        this.moveCurrentTileRight(currentTile, newTiles, i, 3);
+      }
+    }
+
+    this.setState({
+      tiles: newTiles,
+    });
+  }
+
+  moveCurrentTileUp(currentTile, newTiles, index, cell) {
+    let i = index;
+    newTiles[index] = undefined;
+
+    while (i >= cell) {
+      if (i > cell && !newTiles[i - 4]) {
+        i -= 4;
+        continue;
+      } else if (
+        newTiles[i - 4] &&
+        newTiles[i - 4].value === currentTile.value
+      ) {
+        const { x, y } = get2DCoordinate(i - 4);
+        currentTile.value += newTiles[i - 4].value;
+        newTiles[i - 4] = currentTile;
+        newTiles[i - 4].cell = i - 4;
+        newTiles[i - 4].x = x;
+        newTiles[i - 4].y = y;
+        break;
+      } else {
+        const { x, y } = get2DCoordinate(i);
+        newTiles[i] = currentTile;
+        newTiles[i].cell = i;
+        newTiles[i].x = x;
+        newTiles[i].y = y;
+        break;
+      }
+    }
+  }
+
+  moveTilesUp() {
+    const { tiles } = this.state;
+    let newTiles = cloneDeep(tiles);
+    let firstColumn = [0, 4, 8, 12];
+    let secondColumn = [1, 5, 9, 13];
+    let thirdColumn = [2, 6, 10, 14];
+    let fourthColumn = [3, 7, 11, 15];
+
+    for (const [index, currentTile] of newTiles.entries()) {
+      if (!currentTile) continue;
+
+      if (firstColumn.includes(index)) {
+        this.moveCurrentTileUp(currentTile, newTiles, index, 0);
+      } else if (secondColumn.includes(index)) {
+        this.moveCurrentTileUp(currentTile, newTiles, index, 1);
+      } else if (thirdColumn.includes(index)) {
+        this.moveCurrentTileUp(currentTile, newTiles, index, 2);
+      } else if (fourthColumn.includes(index)) {
+        this.moveCurrentTileUp(currentTile, newTiles, index, 3);
+      }
+    }
+
+    this.setState({
+      tiles: newTiles,
+    });
+  }
+
+  moveCurrentTileDown(currentTile, newTiles, index, cell) {
+    let i = index;
+    newTiles[index] = undefined;
+
+    while (i <= cell) {
+      if (i < cell && !newTiles[i + 4]) {
+        i += 4;
+        continue;
+      } else if (
+        newTiles[i + 4] &&
+        newTiles[i + 4].value === currentTile.value
+      ) {
+        const { x, y } = get2DCoordinate(i + 4);
+        currentTile.value += newTiles[i + 4].value;
+        newTiles[i + 4] = currentTile;
+        newTiles[i + 4].cell = i + 4;
+        newTiles[i + 4].x = x;
+        newTiles[i + 4].y = y;
+        break;
+      } else {
+        const { x, y } = get2DCoordinate(i);
+        newTiles[i] = currentTile;
+        newTiles[i].cell = i;
+        newTiles[i].x = x;
+        newTiles[i].y = y;
+        break;
+      }
+    }
+  }
+
+  moveTilesDown() {
+    const { tiles } = this.state;
+    let newTiles = cloneDeep(tiles);
+    let firstColumn = [0, 4, 8, 12];
+    let secondColumn = [1, 5, 9, 13];
+    let thirdColumn = [2, 6, 10, 14];
+    let fourthColumn = [3, 7, 11, 15];
+
+    for (let i = newTiles.length - 1; i >= 0; i--) {
+      const currentTile = newTiles[i];
+      if (!currentTile) continue;
+
+      if (firstColumn.includes(i)) {
+        this.moveCurrentTileDown(currentTile, newTiles, i, 12);
+      } else if (secondColumn.includes(i)) {
+        this.moveCurrentTileDown(currentTile, newTiles, i, 13);
+      } else if (thirdColumn.includes(i)) {
+        this.moveCurrentTileDown(currentTile, newTiles, i, 14);
+      } else if (fourthColumn.includes(i)) {
+        this.moveCurrentTileDown(currentTile, newTiles, i, 15);
       }
     }
 
