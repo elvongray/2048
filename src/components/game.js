@@ -37,6 +37,22 @@ const keys = {
   83: 'down',
 };
 
+//                                           X
+// +---------------+                +-------------------+
+// | 0 | 1 | 2 | 3 |                | 00 | 10 | 20 | 30 |
+// +---------------+                +-------------------+
+// | 4 | 5 | 6 | 7 |                | 01 | 11 | 21 | 31 |
+// +---------------+ +----------->  +-------------------+ Y
+// | 8 |  9| 10| 11|                | 02 | 12 | 22 | 32 |
+// +---------------+                +-------------------+
+// | 12| 13| 14| 15|                | 03 | 13 | 23 | 33 |
+// +---------------+                +-------------------+
+//                                  (x, y) -> (row, column)
+//
+// The 2048 game uses a 4 x 4 dimensional grid, in which tiles with values of the
+// power of 2 can moved in four directions(up, down, left, right). In this implementation, a one dimensional array
+// is used to compute the next position of the tiles. Each tiles contain info that is used to render
+// The tile in 2 dimension as seen on the grid.
 class Game extends Component {
   state = {
     tiles: [],
@@ -96,231 +112,272 @@ class Game extends Component {
     });
   }
 
-  moveCurrentTileLeft(currentTile, newTiles, index, cell) {
+  moveCurrentTileLeft(currentTile, currentTileList, index, cell) {
     let i = index;
-    newTiles[index] = undefined;
+    currentTileList[index] = undefined;
 
     while (i >= cell) {
-      if (i > cell && !newTiles[i - 1]) {
+      if (i > cell && !currentTileList[i - 1]) {
         i -= 1;
         continue;
       } else if (
-        newTiles[i - 1] &&
-        newTiles[i - 1].value === currentTile.value
+        currentTileList[i - 1] &&
+        currentTileList[i - 1].value === currentTile.value
       ) {
         const { x, y } = get2DCoordinate(i - 1);
-        currentTile.value += newTiles[i - 1].value;
-        newTiles[i - 1] = currentTile;
-        newTiles[i - 1].cell = i - 1;
-        newTiles[i - 1].x = x;
-        newTiles[i - 1].y = y;
+        currentTile.value += currentTileList[i - 1].value;
+        currentTileList[i - 1] = currentTile;
+        currentTileList[i - 1].cell = i - 1;
+        currentTileList[i - 1].x = x;
+        currentTileList[i - 1].y = y;
         break;
       } else {
         const { x, y } = get2DCoordinate(i);
-        newTiles[i] = currentTile;
-        newTiles[i].cell = i;
-        newTiles[i].x = x;
-        newTiles[i].y = y;
+        currentTileList[i] = currentTile;
+        currentTileList[i].cell = i;
+        currentTileList[i].x = x;
+        currentTileList[i].y = y;
         break;
       }
     }
   }
 
+  /*
+   * Move tiles to the left of the grid, here the grid is broken into
+   * the four rows. Each of the rows are looped through to check if
+   * there are cells that can be moved to the left or merged with each
+   * other. Check the diagram above to see how the 1D array is mapped to the
+   * 2D array
+   */
   moveTilesLeft() {
     const { tiles } = this.state;
-    let newTiles = cloneDeep(tiles);
+    let currentTileList = cloneDeep(tiles);
 
-    for (const [index, currentTile] of newTiles.entries()) {
+    for (const [index, currentTile] of currentTileList.entries()) {
       if (!currentTile) continue;
 
+      // Move tiles on the first row to the left
       if (index <= 3) {
-        this.moveCurrentTileLeft(currentTile, newTiles, index, 0);
+        this.moveCurrentTileLeft(currentTile, currentTileList, index, 0);
       }
 
+      // Move tiles on the second row to the left
       if (index >= 4 && index <= 7) {
-        this.moveCurrentTileLeft(currentTile, newTiles, index, 4);
+        this.moveCurrentTileLeft(currentTile, currentTileList, index, 4);
       }
 
+      // Move tiles on the third row to the left
       if (index >= 8 && index <= 11) {
-        this.moveCurrentTileLeft(currentTile, newTiles, index, 8);
+        this.moveCurrentTileLeft(currentTile, currentTileList, index, 8);
       }
 
+      // Move tiles on the fourth row to the left
       if (index >= 12 && index <= 15) {
-        this.moveCurrentTileLeft(currentTile, newTiles, index, 12);
+        this.moveCurrentTileLeft(currentTile, currentTileList, index, 12);
       }
     }
 
     this.setState({
-      tiles: newTiles,
+      tiles: currentTileList,
     });
   }
 
-  moveCurrentTileRight(currentTile, newTiles, index, cell) {
+  moveCurrentTileRight(currentTile, currentTileList, index, cell) {
     let i = index;
-    newTiles[index] = undefined;
+    currentTileList[index] = undefined;
 
     while (i <= cell) {
-      if (i < cell && !newTiles[i + 1]) {
+      if (i < cell && !currentTileList[i + 1]) {
         i += 1;
         continue;
       } else if (
-        newTiles[i + 1] &&
-        newTiles[i + 1].value === currentTile.value
+        currentTileList[i + 1] &&
+        currentTileList[i + 1].value === currentTile.value
       ) {
         const { x, y } = get2DCoordinate(i + 1);
-        currentTile.value += newTiles[i + 1].value;
-        newTiles[i + 1] = currentTile;
-        newTiles[i + 1].cell = i + 1;
-        newTiles[i + 1].x = x;
-        newTiles[i + 1].y = y;
+        currentTile.value += currentTileList[i + 1].value;
+        currentTileList[i + 1] = currentTile;
+        currentTileList[i + 1].cell = i + 1;
+        currentTileList[i + 1].x = x;
+        currentTileList[i + 1].y = y;
         break;
       } else {
         const { x, y } = get2DCoordinate(i);
-        newTiles[i] = currentTile;
-        newTiles[i].cell = i;
-        newTiles[i].x = x;
-        newTiles[i].y = y;
+        currentTileList[i] = currentTile;
+        currentTileList[i].cell = i;
+        currentTileList[i].x = x;
+        currentTileList[i].y = y;
         break;
       }
     }
   }
 
+  /*
+   * Move tiles to the right of the grid, here the grid is broken into
+   * the four rows. Each of the rows are looped through to check if
+   * there are cells that can be moved to the Right or merged with each
+   * other.
+   */
   moveTilesRight() {
     const { tiles } = this.state;
-    let newTiles = cloneDeep(tiles);
+    let currentTileList = cloneDeep(tiles);
 
-    for (let i = newTiles.length - 1; i >= 0; i--) {
-      const currentTile = newTiles[i];
+    for (let i = currentTileList.length - 1; i >= 0; i--) {
+      const currentTile = currentTileList[i];
       if (!currentTile) continue;
 
+      // Move tiles on the fourth row to the right
       if (i >= 12 && i <= 15) {
-        this.moveCurrentTileRight(currentTile, newTiles, i, 15);
+        this.moveCurrentTileRight(currentTile, currentTileList, i, 15);
       } else if (i >= 8 && i <= 11) {
-        this.moveCurrentTileRight(currentTile, newTiles, i, 11);
+        // Move tiles on the third row to the right
+        this.moveCurrentTileRight(currentTile, currentTileList, i, 11);
       } else if (i >= 4 && i <= 7) {
-        this.moveCurrentTileRight(currentTile, newTiles, i, 7);
+        // Move tiles on the second row to the right
+        this.moveCurrentTileRight(currentTile, currentTileList, i, 7);
       } else if (i <= 3) {
-        this.moveCurrentTileRight(currentTile, newTiles, i, 3);
+        // Move tiles on the first row to the right
+        this.moveCurrentTileRight(currentTile, currentTileList, i, 3);
       }
     }
 
     this.setState({
-      tiles: newTiles,
+      tiles: currentTileList,
     });
   }
 
-  moveCurrentTileUp(currentTile, newTiles, index, cell) {
+  moveCurrentTileUp(currentTile, currentTileList, index, cell) {
     let i = index;
-    newTiles[index] = undefined;
+    currentTileList[index] = undefined;
 
     while (i >= cell) {
-      if (i > cell && !newTiles[i - 4]) {
+      if (i > cell && !currentTileList[i - 4]) {
         i -= 4;
         continue;
       } else if (
-        newTiles[i - 4] &&
-        newTiles[i - 4].value === currentTile.value
+        currentTileList[i - 4] &&
+        currentTileList[i - 4].value === currentTile.value
       ) {
         const { x, y } = get2DCoordinate(i - 4);
-        currentTile.value += newTiles[i - 4].value;
-        newTiles[i - 4] = currentTile;
-        newTiles[i - 4].cell = i - 4;
-        newTiles[i - 4].x = x;
-        newTiles[i - 4].y = y;
+        currentTile.value += currentTileList[i - 4].value;
+        currentTileList[i - 4] = currentTile;
+        currentTileList[i - 4].cell = i - 4;
+        currentTileList[i - 4].x = x;
+        currentTileList[i - 4].y = y;
         break;
       } else {
         const { x, y } = get2DCoordinate(i);
-        newTiles[i] = currentTile;
-        newTiles[i].cell = i;
-        newTiles[i].x = x;
-        newTiles[i].y = y;
+        currentTileList[i] = currentTile;
+        currentTileList[i].cell = i;
+        currentTileList[i].x = x;
+        currentTileList[i].y = y;
         break;
       }
     }
   }
 
+  /*
+   * Move tiles to the top of the grid, here the grid is broken into
+   * the four coloumns. Each of the coloumns are looped through to check if
+   * there are cells that can be moved to the Top or merged with each
+   * other.
+   */
   moveTilesUp() {
     const { tiles } = this.state;
-    let newTiles = cloneDeep(tiles);
+    let currentTileList = cloneDeep(tiles);
     let firstColumn = [0, 4, 8, 12];
     let secondColumn = [1, 5, 9, 13];
     let thirdColumn = [2, 6, 10, 14];
     let fourthColumn = [3, 7, 11, 15];
 
-    for (const [index, currentTile] of newTiles.entries()) {
+    for (const [index, currentTile] of currentTileList.entries()) {
       if (!currentTile) continue;
 
+      // Move tiles on the first column to the top
       if (firstColumn.includes(index)) {
-        this.moveCurrentTileUp(currentTile, newTiles, index, 0);
+        this.moveCurrentTileUp(currentTile, currentTileList, index, 0);
       } else if (secondColumn.includes(index)) {
-        this.moveCurrentTileUp(currentTile, newTiles, index, 1);
+        // Move tiles on the second column to the top
+        this.moveCurrentTileUp(currentTile, currentTileList, index, 1);
       } else if (thirdColumn.includes(index)) {
-        this.moveCurrentTileUp(currentTile, newTiles, index, 2);
+        // Move tiles on the third column to the top
+        this.moveCurrentTileUp(currentTile, currentTileList, index, 2);
       } else if (fourthColumn.includes(index)) {
-        this.moveCurrentTileUp(currentTile, newTiles, index, 3);
+        // Move tiles on the fourth column to the top
+        this.moveCurrentTileUp(currentTile, currentTileList, index, 3);
       }
     }
 
     this.setState({
-      tiles: newTiles,
+      tiles: currentTileList,
     });
   }
 
-  moveCurrentTileDown(currentTile, newTiles, index, cell) {
+  moveCurrentTileDown(currentTile, currentTileList, index, cell) {
     let i = index;
-    newTiles[index] = undefined;
+    currentTileList[index] = undefined;
 
     while (i <= cell) {
-      if (i < cell && !newTiles[i + 4]) {
+      if (i < cell && !currentTileList[i + 4]) {
         i += 4;
         continue;
       } else if (
-        newTiles[i + 4] &&
-        newTiles[i + 4].value === currentTile.value
+        currentTileList[i + 4] &&
+        currentTileList[i + 4].value === currentTile.value
       ) {
         const { x, y } = get2DCoordinate(i + 4);
-        currentTile.value += newTiles[i + 4].value;
-        newTiles[i + 4] = currentTile;
-        newTiles[i + 4].cell = i + 4;
-        newTiles[i + 4].x = x;
-        newTiles[i + 4].y = y;
+        currentTile.value += currentTileList[i + 4].value;
+        currentTileList[i + 4] = currentTile;
+        currentTileList[i + 4].cell = i + 4;
+        currentTileList[i + 4].x = x;
+        currentTileList[i + 4].y = y;
         break;
       } else {
         const { x, y } = get2DCoordinate(i);
-        newTiles[i] = currentTile;
-        newTiles[i].cell = i;
-        newTiles[i].x = x;
-        newTiles[i].y = y;
+        currentTileList[i] = currentTile;
+        currentTileList[i].cell = i;
+        currentTileList[i].x = x;
+        currentTileList[i].y = y;
         break;
       }
     }
   }
 
+  /*
+   * Move tiles to the bottom of the grid, here the grid is broken into
+   * the four coloumns. Each of the coloumns are looped through to check if
+   * there are cells that can be moved to the bottom or merged with each
+   * other.
+   */
   moveTilesDown() {
     const { tiles } = this.state;
-    let newTiles = cloneDeep(tiles);
+    let currentTileList = cloneDeep(tiles);
     let firstColumn = [0, 4, 8, 12];
     let secondColumn = [1, 5, 9, 13];
     let thirdColumn = [2, 6, 10, 14];
     let fourthColumn = [3, 7, 11, 15];
 
-    for (let i = newTiles.length - 1; i >= 0; i--) {
-      const currentTile = newTiles[i];
+    for (let i = currentTileList.length - 1; i >= 0; i--) {
+      const currentTile = currentTileList[i];
       if (!currentTile) continue;
 
+      // Move tiles on the first column to the bottom
       if (firstColumn.includes(i)) {
-        this.moveCurrentTileDown(currentTile, newTiles, i, 12);
+        this.moveCurrentTileDown(currentTile, currentTileList, i, 12);
       } else if (secondColumn.includes(i)) {
-        this.moveCurrentTileDown(currentTile, newTiles, i, 13);
+        // Move tiles on the second column to the bottom
+        this.moveCurrentTileDown(currentTile, currentTileList, i, 13);
       } else if (thirdColumn.includes(i)) {
-        this.moveCurrentTileDown(currentTile, newTiles, i, 14);
+        // Move tiles on the third column to the bottom
+        this.moveCurrentTileDown(currentTile, currentTileList, i, 14);
       } else if (fourthColumn.includes(i)) {
-        this.moveCurrentTileDown(currentTile, newTiles, i, 15);
+        // Move tiles on the fourth column to the bottom
+        this.moveCurrentTileDown(currentTile, currentTileList, i, 15);
       }
     }
 
     this.setState({
-      tiles: newTiles,
+      tiles: currentTileList,
     });
   }
 
