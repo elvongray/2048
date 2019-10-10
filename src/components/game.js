@@ -1,3 +1,5 @@
+/* eslint-disable operator-linebreak */
+/* eslint-disable no-continue */
 /* eslint-disable no-mixed-operators */
 import React, { Component } from 'react';
 import uuidv4 from 'uuid/v4';
@@ -26,7 +28,7 @@ const get2DCoordinate = n => {
 
 const get1DCoordinate = ({ x, y }) => x + y * COLOUMNSIZE;
 
-const keys = {
+const controlKeys = {
   37: 'left',
   39: 'right',
   38: 'up',
@@ -54,10 +56,13 @@ const keys = {
 // is used to compute the next position of the tiles. Each tiles contain info that is used to render
 // The tile in 2 dimension as seen on the grid.
 class Game extends Component {
-  state = {
-    tiles: [],
-    newGame: false,
-  };
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      tiles: [],
+    };
+  }
 
   componentDidMount() {
     this.initializeNewGrid();
@@ -69,24 +74,27 @@ class Game extends Component {
   }
 
   handleKeyDown(e) {
-    if (keys[e.keyCode] === 'left') {
+    if (controlKeys[e.keyCode] === 'left') {
       this.moveTilesLeft();
-    } else if (keys[e.keyCode] === 'right') {
+    } else if (controlKeys[e.keyCode] === 'right') {
       this.moveTilesRight();
-    } else if (keys[e.keyCode] === 'up') {
+    } else if (controlKeys[e.keyCode] === 'up') {
       this.moveTilesUp();
-    } else if (keys[e.keyCode] === 'down') {
+    } else if (controlKeys[e.keyCode] === 'down') {
       this.moveTilesDown();
+    }
+
+    if (Object.keys(controlKeys).includes(e.keyCode.toString())) {
+      this.insertNewTileIntoGrid();
     }
   }
 
-  getTile() {
-    const tile1DCoordinate = generateRandomNo(NUMOFCELLS - 1);
+  getTile(tile1DCoordinate) {
     return {
       ...get2DCoordinate(tile1DCoordinate),
       cell: tile1DCoordinate,
       key: uuidv4(),
-      value: randomTileList[generateRandomNo(9)],
+      value: randomTileList[generateRandomNo(randomTileList.length - 1)],
     };
   }
 
@@ -95,8 +103,8 @@ class Game extends Component {
   }
 
   initializeNewGrid() {
-    const firstTile = this.getTile();
-    const secondTile = this.getTile();
+    const firstTile = this.getTile(generateRandomNo(NUMOFCELLS - 1));
+    const secondTile = this.getTile(generateRandomNo(NUMOFCELLS - 1));
     const tiles = Array(NUMOFCELLS);
 
     if (firstTile.x === secondTile.x && firstTile.y === secondTile.y) {
@@ -110,6 +118,24 @@ class Game extends Component {
     this.setState({
       tiles,
     });
+  }
+
+  // Find the empty cells in the grid and randomly select where
+  // a new tile should be inserted
+  insertNewTileIntoGrid() {
+    const { tiles } = this.state;
+    const emptyCells = [];
+
+    for (const [index, tile] of tiles.entries()) {
+      if (!tile) emptyCells.push(index);
+    }
+
+    const newTile = this.getTile(
+      emptyCells[generateRandomNo(emptyCells.length - 1)],
+    );
+    tiles[newTile.cell] = newTile;
+
+    this.setState({ tiles });
   }
 
   moveCurrentTileLeft(currentTile, currentTileList, index, cell) {
@@ -151,7 +177,7 @@ class Game extends Component {
    */
   moveTilesLeft() {
     const { tiles } = this.state;
-    let currentTileList = cloneDeep(tiles);
+    const currentTileList = cloneDeep(tiles);
 
     for (const [index, currentTile] of currentTileList.entries()) {
       if (!currentTile) continue;
@@ -220,7 +246,7 @@ class Game extends Component {
    */
   moveTilesRight() {
     const { tiles } = this.state;
-    let currentTileList = cloneDeep(tiles);
+    const currentTileList = cloneDeep(tiles);
 
     for (let i = currentTileList.length - 1; i >= 0; i--) {
       const currentTile = currentTileList[i];
@@ -284,11 +310,11 @@ class Game extends Component {
    */
   moveTilesUp() {
     const { tiles } = this.state;
-    let currentTileList = cloneDeep(tiles);
-    let firstColumn = [0, 4, 8, 12];
-    let secondColumn = [1, 5, 9, 13];
-    let thirdColumn = [2, 6, 10, 14];
-    let fourthColumn = [3, 7, 11, 15];
+    const currentTileList = cloneDeep(tiles);
+    const firstColumn = [0, 4, 8, 12];
+    const secondColumn = [1, 5, 9, 13];
+    const thirdColumn = [2, 6, 10, 14];
+    const fourthColumn = [3, 7, 11, 15];
 
     for (const [index, currentTile] of currentTileList.entries()) {
       if (!currentTile) continue;
@@ -351,11 +377,11 @@ class Game extends Component {
    */
   moveTilesDown() {
     const { tiles } = this.state;
-    let currentTileList = cloneDeep(tiles);
-    let firstColumn = [0, 4, 8, 12];
-    let secondColumn = [1, 5, 9, 13];
-    let thirdColumn = [2, 6, 10, 14];
-    let fourthColumn = [3, 7, 11, 15];
+    const currentTileList = cloneDeep(tiles);
+    const firstColumn = [0, 4, 8, 12];
+    const secondColumn = [1, 5, 9, 13];
+    const thirdColumn = [2, 6, 10, 14];
+    const fourthColumn = [3, 7, 11, 15];
 
     for (let i = currentTileList.length - 1; i >= 0; i--) {
       const currentTile = currentTileList[i];
