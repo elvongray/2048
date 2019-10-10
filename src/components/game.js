@@ -115,9 +115,28 @@ class Game extends Component {
     tiles[firstTile.cell] = firstTile;
     tiles[secondTile.cell] = secondTile;
 
-    this.setState({
-      tiles,
-    });
+    this.setState(
+      {
+        tiles,
+      },
+      () => {
+        // Animate the initial tiles added to the grid.
+        // Note: Not a good pattern
+        const tile1 = document.querySelector(
+          `.tile-${firstTile.x}-${firstTile.y} .tile-inner`,
+        );
+        const tile2 = document.querySelector(
+          `.tile-${secondTile.x}-${secondTile.y} .tile-inner`,
+        );
+
+        tile1.classList.add('pulse1');
+        tile2.classList.add('pulse1');
+        setTimeout(() => {
+          tile1.classList.remove('pulse1');
+          tile2.classList.remove('pulse1');
+        }, 500);
+      },
+    );
   }
 
   // Find the empty cells in the grid and randomly select where
@@ -135,20 +154,37 @@ class Game extends Component {
     );
     tiles[newTile.cell] = newTile;
 
-    this.setState({ tiles });
+    this.setState({ tiles }, () => {
+      const tile = document.querySelector(
+        `.tile-${newTile.x}-${newTile.y} .tile-inner`,
+      );
+      if (!tile) return;
+      tile.classList.add('pulse1');
+      setTimeout(() => {
+        tile.classList.remove('pulse1');
+      }, 500);
+    });
   }
 
-  moveCurrentTileLeft(currentTile, currentTileList, index, cell) {
+  moveCurrentTileLeft(
+    currentTile,
+    currentTileList,
+    index,
+    firstCell,
+    lastCell,
+  ) {
     let i = index;
     currentTileList[index] = undefined;
 
-    while (i >= cell) {
-      if (i > cell && !currentTileList[i - 1]) {
+    while (i >= firstCell) {
+      if (i > firstCell && !currentTileList[i - 1]) {
         i -= 1;
         continue;
       } else if (
         currentTileList[i - 1] &&
-        currentTileList[i - 1].value === currentTile.value
+        currentTileList[i - 1].value === currentTile.value &&
+        i - 1 >= firstCell &&
+        i - 1 <= lastCell
       ) {
         const { x, y } = get2DCoordinate(i - 1);
         currentTile.value += currentTileList[i - 1].value;
@@ -184,22 +220,22 @@ class Game extends Component {
 
       // Move tiles on the first row to the left
       if (index <= 3) {
-        this.moveCurrentTileLeft(currentTile, currentTileList, index, 0);
+        this.moveCurrentTileLeft(currentTile, currentTileList, index, 0, 3);
       }
 
       // Move tiles on the second row to the left
       if (index >= 4 && index <= 7) {
-        this.moveCurrentTileLeft(currentTile, currentTileList, index, 4);
+        this.moveCurrentTileLeft(currentTile, currentTileList, index, 4, 7);
       }
 
       // Move tiles on the third row to the left
       if (index >= 8 && index <= 11) {
-        this.moveCurrentTileLeft(currentTile, currentTileList, index, 8);
+        this.moveCurrentTileLeft(currentTile, currentTileList, index, 8, 11);
       }
 
       // Move tiles on the fourth row to the left
       if (index >= 12 && index <= 15) {
-        this.moveCurrentTileLeft(currentTile, currentTileList, index, 12);
+        this.moveCurrentTileLeft(currentTile, currentTileList, index, 12, 15);
       }
     }
 
@@ -208,17 +244,25 @@ class Game extends Component {
     });
   }
 
-  moveCurrentTileRight(currentTile, currentTileList, index, cell) {
+  moveCurrentTileRight(
+    currentTile,
+    currentTileList,
+    index,
+    firstCell,
+    lastCell,
+  ) {
     let i = index;
     currentTileList[index] = undefined;
 
-    while (i <= cell) {
-      if (i < cell && !currentTileList[i + 1]) {
+    while (i <= lastCell) {
+      if (i < lastCell && !currentTileList[i + 1]) {
         i += 1;
         continue;
       } else if (
         currentTileList[i + 1] &&
-        currentTileList[i + 1].value === currentTile.value
+        currentTileList[i + 1].value === currentTile.value &&
+        i + 1 >= firstCell &&
+        i + 1 <= lastCell
       ) {
         const { x, y } = get2DCoordinate(i + 1);
         currentTile.value += currentTileList[i + 1].value;
@@ -254,16 +298,16 @@ class Game extends Component {
 
       // Move tiles on the fourth row to the right
       if (i >= 12 && i <= 15) {
-        this.moveCurrentTileRight(currentTile, currentTileList, i, 15);
+        this.moveCurrentTileRight(currentTile, currentTileList, i, 12, 15);
       } else if (i >= 8 && i <= 11) {
         // Move tiles on the third row to the right
-        this.moveCurrentTileRight(currentTile, currentTileList, i, 11);
+        this.moveCurrentTileRight(currentTile, currentTileList, i, 8, 11);
       } else if (i >= 4 && i <= 7) {
         // Move tiles on the second row to the right
-        this.moveCurrentTileRight(currentTile, currentTileList, i, 7);
+        this.moveCurrentTileRight(currentTile, currentTileList, i, 4, 7);
       } else if (i <= 3) {
         // Move tiles on the first row to the right
-        this.moveCurrentTileRight(currentTile, currentTileList, i, 3);
+        this.moveCurrentTileRight(currentTile, currentTileList, i, 0, 3);
       }
     }
 
@@ -272,7 +316,7 @@ class Game extends Component {
     });
   }
 
-  moveCurrentTileUp(currentTile, currentTileList, index, cell) {
+  moveCurrentTileUp(currentTile, currentTileList, index, cell, column) {
     let i = index;
     currentTileList[index] = undefined;
 
@@ -282,7 +326,8 @@ class Game extends Component {
         continue;
       } else if (
         currentTileList[i - 4] &&
-        currentTileList[i - 4].value === currentTile.value
+        currentTileList[i - 4].value === currentTile.value &&
+        column.includes(i - 4)
       ) {
         const { x, y } = get2DCoordinate(i - 4);
         currentTile.value += currentTileList[i - 4].value;
@@ -321,16 +366,40 @@ class Game extends Component {
 
       // Move tiles on the first column to the top
       if (firstColumn.includes(index)) {
-        this.moveCurrentTileUp(currentTile, currentTileList, index, 0);
+        this.moveCurrentTileUp(
+          currentTile,
+          currentTileList,
+          index,
+          0,
+          firstColumn,
+        );
       } else if (secondColumn.includes(index)) {
         // Move tiles on the second column to the top
-        this.moveCurrentTileUp(currentTile, currentTileList, index, 1);
+        this.moveCurrentTileUp(
+          currentTile,
+          currentTileList,
+          index,
+          1,
+          secondColumn,
+        );
       } else if (thirdColumn.includes(index)) {
         // Move tiles on the third column to the top
-        this.moveCurrentTileUp(currentTile, currentTileList, index, 2);
+        this.moveCurrentTileUp(
+          currentTile,
+          currentTileList,
+          index,
+          2,
+          thirdColumn,
+        );
       } else if (fourthColumn.includes(index)) {
         // Move tiles on the fourth column to the top
-        this.moveCurrentTileUp(currentTile, currentTileList, index, 3);
+        this.moveCurrentTileUp(
+          currentTile,
+          currentTileList,
+          index,
+          3,
+          fourthColumn,
+        );
       }
     }
 
@@ -339,7 +408,7 @@ class Game extends Component {
     });
   }
 
-  moveCurrentTileDown(currentTile, currentTileList, index, cell) {
+  moveCurrentTileDown(currentTile, currentTileList, index, cell, column) {
     let i = index;
     currentTileList[index] = undefined;
 
@@ -349,7 +418,8 @@ class Game extends Component {
         continue;
       } else if (
         currentTileList[i + 4] &&
-        currentTileList[i + 4].value === currentTile.value
+        currentTileList[i + 4].value === currentTile.value &&
+        column.includes(i + 4)
       ) {
         const { x, y } = get2DCoordinate(i + 4);
         currentTile.value += currentTileList[i + 4].value;
@@ -389,16 +459,40 @@ class Game extends Component {
 
       // Move tiles on the first column to the bottom
       if (firstColumn.includes(i)) {
-        this.moveCurrentTileDown(currentTile, currentTileList, i, 12);
+        this.moveCurrentTileDown(
+          currentTile,
+          currentTileList,
+          i,
+          12,
+          firstColumn,
+        );
       } else if (secondColumn.includes(i)) {
         // Move tiles on the second column to the bottom
-        this.moveCurrentTileDown(currentTile, currentTileList, i, 13);
+        this.moveCurrentTileDown(
+          currentTile,
+          currentTileList,
+          i,
+          13,
+          secondColumn,
+        );
       } else if (thirdColumn.includes(i)) {
         // Move tiles on the third column to the bottom
-        this.moveCurrentTileDown(currentTile, currentTileList, i, 14);
+        this.moveCurrentTileDown(
+          currentTile,
+          currentTileList,
+          i,
+          14,
+          thirdColumn,
+        );
       } else if (fourthColumn.includes(i)) {
         // Move tiles on the fourth column to the bottom
-        this.moveCurrentTileDown(currentTile, currentTileList, i, 15);
+        this.moveCurrentTileDown(
+          currentTile,
+          currentTileList,
+          i,
+          15,
+          fourthColumn,
+        );
       }
     }
 
