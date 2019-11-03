@@ -61,6 +61,10 @@ class Game extends Component {
 
     this.state = {
       tiles: [],
+      gameOver: false,
+      checkGameOver: false,
+      numberOfChecks: 0,
+      numberOfDirectionsToMove: 0,
     };
   }
 
@@ -69,8 +73,47 @@ class Game extends Component {
     window.addEventListener('keydown', this.handleKeyDown.bind(this));
   }
 
+  componentDidUpdate() {
+    if (this.state.checkGameOver) {
+      this.checkIfGameOver();
+    }
+  }
+
   componentWillUnmount() {
     window.removeEventListener('keydown', this.handleKeyDown.bind(this));
+  }
+
+  // This function will only be called if all the cells have been occupied by tiles.
+  // All the tile functions are called to confirm if there are not
+  //  any move that can be made in the four direactions
+  checkIfGameOver() {
+    if (this.state.numberOfDirectionsToMove === 0) {
+      this.moveTilesLeft();
+      this.moveTilesRight();
+      this.moveTilesUp();
+      this.moveTilesDown();
+
+      // This checks if the number of directions to move state
+      // is still zero after the first checkIfGameOver call, which means the player cannot make any other
+      // move and the game is over
+      if (this.state.numberOfChecks > 0) {
+        this.setState({
+          checkGameOver: false,
+          gameOver: true,
+          numberOfChecks: 0,
+        });
+      } else {
+        this.setState(state => ({
+          numberOfChecks: state.numberOfChecks + 1,
+        }));
+      }
+    } else {
+      this.setState({
+        numberOfDirectionsToMove: 0,
+        checkGameOver: false,
+        numberOfChecks: 0,
+      });
+    }
   }
 
   handleKeyDown(e) {
@@ -149,6 +192,11 @@ class Game extends Component {
       if (!tile) emptyCells.push(index);
     }
 
+    if (!emptyCells.length) {
+      this.setState({ checkGameOver: true });
+      return;
+    }
+
     const newTile = this.getTile(
       emptyCells[generateRandomNo(emptyCells.length - 1)],
     );
@@ -164,6 +212,20 @@ class Game extends Component {
         tile.classList.remove('pulse1');
       }, 500);
     });
+  }
+
+  updateTiles(currentTileList) {
+    if (this.state.checkGameOver) {
+      if (currentTileList.includes(undefined)) {
+        this.setState(state => ({
+          numberOfDirectionsToMove: state.numberOfDirectionsToMove + 1,
+        }));
+      }
+    } else {
+      this.setState({
+        tiles: currentTileList,
+      });
+    }
   }
 
   moveCurrentTileLeft(
@@ -187,6 +249,7 @@ class Game extends Component {
         i - 1 <= lastCell
       ) {
         const { x, y } = get2DCoordinate(i - 1);
+
         currentTile.value += currentTileList[i - 1].value;
         currentTileList[i - 1] = currentTile;
         currentTileList[i - 1].cell = i - 1;
@@ -239,9 +302,7 @@ class Game extends Component {
       }
     }
 
-    this.setState({
-      tiles: currentTileList,
-    });
+    this.updateTiles(currentTileList);
   }
 
   moveCurrentTileRight(
@@ -311,9 +372,7 @@ class Game extends Component {
       }
     }
 
-    this.setState({
-      tiles: currentTileList,
-    });
+    this.updateTiles(currentTileList);
   }
 
   moveCurrentTileUp(currentTile, currentTileList, index, cell, column) {
@@ -403,9 +462,7 @@ class Game extends Component {
       }
     }
 
-    this.setState({
-      tiles: currentTileList,
-    });
+    this.updateTiles(currentTileList);
   }
 
   moveCurrentTileDown(currentTile, currentTileList, index, cell, column) {
@@ -496,19 +553,19 @@ class Game extends Component {
       }
     }
 
-    this.setState({
-      tiles: currentTileList,
-    });
+    this.updateTiles(currentTileList);
   }
 
   render() {
+    const { tiles, gameOver } = this.state;
+
     return (
       <div className="container">
         <div className="row">
           <GameInfo restartGame={() => this.restartGame()} />
         </div>
         <div className="row">
-          <Grid tiles={this.state.tiles} />
+          <Grid tiles={tiles} gameOver={gameOver} />
         </div>
       </div>
     );

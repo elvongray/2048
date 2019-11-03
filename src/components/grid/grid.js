@@ -39,9 +39,3 @@ class Grid extends Component {
 }
 
 export default Grid;
-
-[undefined, 1, 3, 4].map(value => {
-  if (value) {
-    return value;
-  }
-});
