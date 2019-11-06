@@ -142,7 +142,17 @@ class Game extends Component {
   }
 
   restartGame() {
-    this.initializeNewGrid();
+    this.setState(
+      {
+        checkGameOver: false,
+        gameOver: false,
+        numberOfChecks: 0,
+        numberOfDirectionsToMove: 0,
+      },
+      () => {
+        this.initializeNewGrid();
+      },
+    );
   }
 
   initializeNewGrid() {
@@ -565,7 +575,11 @@ class Game extends Component {
           <GameInfo restartGame={() => this.restartGame()} />
         </div>
         <div className="row">
-          <Grid tiles={tiles} gameOver={gameOver} />
+          <Grid
+            tiles={tiles}
+            gameOver={gameOver}
+            restartGame={() => this.restartGame()}
+          />
         </div>
       </div>
     );

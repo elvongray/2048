@@ -8,10 +8,12 @@ import Tile from './tile/tile';
 class Grid extends Component {
   static propTypes = {
     tiles: PropTypes.array.isRequired,
+    gameOver: PropTypes.bool.isRequired,
+    restartGame: PropTypes.func.isRequired,
   };
 
   render() {
-    const { tiles } = this.props;
+    const { tiles, gameOver, restartGame } = this.props;
     const gameCells = [1, 2, 3, 4].map(key => (
       <div className="rowe" key={key}>
         <div className="column column-21" />
@@ -33,6 +35,20 @@ class Grid extends Component {
             }
           })}
         </div>
+        {gameOver && (
+          <div className="game-over-container">
+            <div className="game-over">
+              <div className="text">Game over!</div>
+              <button
+                type="button"
+                className="button"
+                onClick={() => restartGame()}
+              >
+                Try again
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     );
   }
