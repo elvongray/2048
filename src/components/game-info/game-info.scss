@@ -51,6 +51,11 @@
       display: inline-block;
       line-height: 40px;
       font-weight: 400;
+
+      @media (max-width: 639px) {
+        width: 320px;
+        line-height: 1;
+      }
     }
 
     button.button {

@@ -65,6 +65,7 @@ class Game extends Component {
       checkGameOver: false,
       numberOfChecks: 0,
       numberOfDirectionsToMove: 0,
+      score: 0,
     };
   }
 
@@ -148,6 +149,7 @@ class Game extends Component {
         gameOver: false,
         numberOfChecks: 0,
         numberOfDirectionsToMove: 0,
+        score: 0,
       },
       () => {
         this.initializeNewGrid();
@@ -238,6 +240,12 @@ class Game extends Component {
     }
   }
 
+  updateScores(score) {
+    this.setState(state => ({
+      score: state.score + score,
+    }));
+  }
+
   moveCurrentTileLeft(
     currentTile,
     currentTileList,
@@ -265,6 +273,7 @@ class Game extends Component {
         currentTileList[i - 1].cell = i - 1;
         currentTileList[i - 1].x = x;
         currentTileList[i - 1].y = y;
+        this.updateScores(currentTile.value);
         break;
       } else {
         const { x, y } = get2DCoordinate(i);
@@ -341,6 +350,7 @@ class Game extends Component {
         currentTileList[i + 1].cell = i + 1;
         currentTileList[i + 1].x = x;
         currentTileList[i + 1].y = y;
+        this.updateScores(currentTile.value);
         break;
       } else {
         const { x, y } = get2DCoordinate(i);
@@ -404,6 +414,7 @@ class Game extends Component {
         currentTileList[i - 4].cell = i - 4;
         currentTileList[i - 4].x = x;
         currentTileList[i - 4].y = y;
+        this.updateScores(currentTile.value);
         break;
       } else {
         const { x, y } = get2DCoordinate(i);
@@ -494,6 +505,7 @@ class Game extends Component {
         currentTileList[i + 4].cell = i + 4;
         currentTileList[i + 4].x = x;
         currentTileList[i + 4].y = y;
+        this.updateScores(currentTile.value);
         break;
       } else {
         const { x, y } = get2DCoordinate(i);
@@ -567,12 +579,12 @@ class Game extends Component {
   }
 
   render() {
-    const { tiles, gameOver } = this.state;
+    const { tiles, gameOver, score } = this.state;
 
     return (
       <div className="container">
         <div className="row">
-          <GameInfo restartGame={() => this.restartGame()} />
+          <GameInfo score={score} restartGame={() => this.restartGame()} />
         </div>
         <div className="row">
           <Grid

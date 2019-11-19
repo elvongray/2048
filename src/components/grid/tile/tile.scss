@@ -24,6 +24,10 @@ $tile-width: 106.25px;
 $tile-count: 4;
 $tile-padding: 15px;
 
+@media (max-width: 639px) {
+  $tile-width: 97px;
+}
+
 @function power($x, $n) {
   $ret: 1;
 
@@ -66,9 +70,14 @@ $tile-padding: 15px;
 
 .tile {
   position: absolute;
-  width: $tile-width;
-  height: $tile-width;
+  width: 106.25px;
+  height: 106.25px;
   transition: transform 0.1s ease-in-out;
+
+  @media (max-width: 639px) {
+    width: 97px;
+    height: 97px;
+  }
 
   @for $x from 1 through $tile-count {
     @for $y from 1 through $tile-count {
@@ -79,6 +88,13 @@ $tile-padding: 15px;
 
       &.tile-#{$zeroOffsetX}-#{$zeroOffsetY} {
         transform: translate($newX, $newY);
+
+        @media (max-width: 639px) {
+          transform: translate(
+            calc(97px * #{$zeroOffsetX} + #{$tile-padding * $zeroOffsetX}),
+            calc(97px * #{$zeroOffsetY} + #{$tile-padding * $zeroOffsetY})
+          );
+        }
       }
     }
   }
@@ -104,14 +120,19 @@ $tile-padding: 15px;
   }
 
   .tile-inner {
-    width: $tile-width;
-    height: $tile-width;
+    width: 106.25px;
+    height: 106.25px;
     border-radius: 3px;
     text-align: center;
     font-weight: bold;
     z-index: 10;
     font-size: 55px;
     line-height: 100px;
+
+    @media (max-width: 639px) {
+      width: 97px;
+      height: 97px;
+    }
 
     &.pulse {
       transform: scale(1);

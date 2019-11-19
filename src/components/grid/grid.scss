@@ -1,9 +1,9 @@
-$tile-width: 106.25px;
-$tile-count: 4;
-$tile-padding: 15px;
-
 .game-arena-container {
   height: 500px;
+
+  @media (max-width: 639px) {
+    height: 465px;
+  }
 
   &.column {
     margin-top: 30px;
@@ -31,13 +31,18 @@ $tile-padding: 15px;
       padding: 0;
       text-align: center;
       margin-bottom: 0;
-      width: $tile-width;
-      height: $tile-width;
+      width: 106.25px;
+      height: 106.25px;
       border-radius: 3px;
       background: rgba(238, 228, 218, 0.35);
 
       &:last-child {
         margin-right: 0;
+      }
+
+      @media (max-width: 639px) {
+        width: 97px;
+        height: 97px;
       }
     }
   }
