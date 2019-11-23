@@ -67,8 +67,9 @@ class Game extends Component {
   componentDidUpdate() {
     if (this.state.checkGameOver) {
       this.checkIfGameOver();
+    } else {
+      saveGameState(this.state);
     }
-    saveGameState(this.state);
   }
 
   componentWillUnmount() {
@@ -249,13 +250,15 @@ class Game extends Component {
   }
 
   updateScores(score) {
-    this.setState(state => ({
-      score: state.score + score,
-      highScore:
-        state.highScore > state.score + score
-          ? state.highScore
-          : state.score + score,
-    }));
+    if (!this.state.checkGameOver) {
+      this.setState(state => ({
+        score: state.score + score,
+        highScore:
+          state.highScore > state.score + score
+            ? state.highScore
+            : state.score + score,
+      }));
+    }
   }
 
   moveCurrentTileLeft(
