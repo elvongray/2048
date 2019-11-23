@@ -9,7 +9,7 @@ module.exports = webpackMerge(commonConfig, {
   devtool: 'source-map',
 
   output: {
-    path: path.join(__dirname, '..', 'dist'),
+    path: path.join(__dirname, '..', '.'),
 
     filename: '[name].[chunkhash].bundle.js',
 
