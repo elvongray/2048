@@ -594,7 +594,7 @@ class Game extends Component {
     const { tiles, gameOver, score, gameWon, highScore } = this.state;
 
     return (
-      <div className="container">
+      <div className="cont">
         <div className="row">
           <GameInfo
             score={score}

@@ -42,6 +42,21 @@
         width: 150px;
       }
     }
+
+    @media (max-width: 520px) {
+      .title {
+        font-size: 27px;
+      }
+
+      .game-scores-container {
+        width: 72%;
+        font-size: 10px;
+
+        .best-score {
+          width: 120px;
+        }
+      }
+    }
   }
 
   .game-info-2 {
@@ -51,11 +66,6 @@
       display: inline-block;
       line-height: 40px;
       font-weight: 400;
-
-      @media (max-width: 639px) {
-        width: 320px;
-        line-height: 1;
-      }
     }
 
     button.button {
@@ -70,6 +80,16 @@
       text-transform: none;
       line-height: 40px;
       color: #f9f6f2;
+    }
+
+    @media (max-width: 520px) {
+      margin-top: 52px;
+
+      div {
+        font-size: 14px;
+        width: 155px;
+        line-height: 1;
+      }
     }
   }
 }

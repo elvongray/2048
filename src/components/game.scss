@@ -10,6 +10,12 @@ body {
   background-color: #faf8ef;
 }
 
-.container {
-  width: 536px;
+.cont {
+  width: 464px;
+  margin: 0 auto;
+
+  @media (max-width: 520px) {
+    width: 300px;
+    overflow: hidden;
+  }
 }
