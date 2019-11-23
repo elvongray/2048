@@ -109,21 +109,28 @@ class Game extends Component {
   }
 
   handleKeyDown(e) {
-    if (controlKeys[e.keyCode] === 'left') {
+    if (controlKeys[e.keyCode] === 'left' || e.direction === 'left') {
       this.moveTilesLeft();
-    } else if (controlKeys[e.keyCode] === 'right') {
+    } else if (controlKeys[e.keyCode] === 'right' || e.direction === 'right') {
       this.moveTilesRight();
-    } else if (controlKeys[e.keyCode] === 'up') {
+    } else if (controlKeys[e.keyCode] === 'up' || e.direction === 'up') {
       this.moveTilesUp();
-    } else if (controlKeys[e.keyCode] === 'down') {
+    } else if (controlKeys[e.keyCode] === 'down' || e.direction === 'down') {
       this.moveTilesDown();
     }
 
-    if (Object.keys(controlKeys).includes(e.keyCode.toString())) {
+    if (
+      e.direction ||
+      Object.keys(controlKeys).includes(e.keyCode.toString())
+    ) {
       this.insertNewTileIntoGrid();
     }
 
     this.checkIfPlayerWon();
+  }
+
+  handleSwipe(direction) {
+    this.handleKeyDown(direction);
   }
 
   checkIfPlayerWon() {
@@ -600,6 +607,7 @@ class Game extends Component {
             tiles={tiles}
             gameOver={gameOver}
             gameWon={gameWon}
+            handleSwipe={direction => this.handleSwipe(direction)}
             restartGame={() => this.restartGame()}
           />
         </div>

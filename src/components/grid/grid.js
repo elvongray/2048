@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
+import Hammer from 'hammerjs';
 
 import './grid.scss';
 
@@ -10,8 +11,29 @@ class Grid extends Component {
     tiles: PropTypes.array.isRequired,
     gameOver: PropTypes.bool.isRequired,
     gameWon: PropTypes.bool.isRequired,
+    handleSwipe: PropTypes.func.isRequired,
     restartGame: PropTypes.func.isRequired,
   };
+
+  constructor(props) {
+    super(props);
+    this.gridRef = React.createRef();
+  }
+
+  componentDidMount() {
+    const hammertime = new Hammer(this.gridRef.current);
+    hammertime.get('swipe').set({ direction: Hammer.DIRECTION_ALL });
+    hammertime.on('swipeup', () => this.props.handleSwipe({ direction: 'up' }));
+    hammertime.on('swipedown', () =>
+      this.props.handleSwipe({ direction: 'down' }),
+    );
+    hammertime.on('swipeleft', () =>
+      this.props.handleSwipe({ direction: 'left' }),
+    );
+    hammertime.on('swiperight', () =>
+      this.props.handleSwipe({ direction: 'right' }),
+    );
+  }
 
   render() {
     const { tiles, gameOver, restartGame, gameWon } = this.props;
@@ -25,7 +47,10 @@ class Grid extends Component {
     ));
 
     return (
-      <div className="column column-100 game-arena-container">
+      <div
+        className="column column-100 game-arena-container"
+        ref={this.gridRef}
+      >
         <div className="grid-container">{gameCells}</div>
         <div className="tiles-container">
           {tiles.map(tile => {

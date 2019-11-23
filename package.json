@@ -43,6 +43,7 @@
     "webpack-merge": "^4.2.2"
   },
   "dependencies": {
+    "hammerjs": "^2.0.8",
     "lodash.clonedeep": "^4.5.0",
     "react": "^16.9.0",
     "react-dom": "^16.9.0",
