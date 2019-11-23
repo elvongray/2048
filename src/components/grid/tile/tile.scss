@@ -105,12 +105,20 @@ $tile-padding: 15px;
 
       @if $i > 7 {
         font-size: 45px;
+
+        @media (max-width: 520px) {
+          font-size: 24px;
+        }
       }
 
       @if $i > 9 {
         font-size: 35px;
         box-shadow: 0 0 30px 10px rgba(243, 215, 116, 0.55556),
           inset 0 0 0 1px rgba(255, 255, 255, 0.33333);
+
+        @media (max-width: 520px) {
+          font-size: 24px;
+        }
       }
     }
   }
