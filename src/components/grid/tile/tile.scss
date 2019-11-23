@@ -24,10 +24,6 @@ $tile-width: 106.25px;
 $tile-count: 4;
 $tile-padding: 15px;
 
-@media (max-width: 639px) {
-  $tile-width: 97px;
-}
-
 @function power($x, $n) {
   $ret: 1;
 
@@ -74,9 +70,9 @@ $tile-padding: 15px;
   height: 106.25px;
   transition: transform 0.1s ease-in-out;
 
-  @media (max-width: 639px) {
-    width: 97px;
-    height: 97px;
+  @media (max-width: 520px) {
+    width: 56.5px;
+    height: 56.5px;
   }
 
   @for $x from 1 through $tile-count {
@@ -91,8 +87,8 @@ $tile-padding: 15px;
 
         @media (max-width: 639px) {
           transform: translate(
-            calc(97px * #{$zeroOffsetX} + #{$tile-padding * $zeroOffsetX}),
-            calc(97px * #{$zeroOffsetY} + #{$tile-padding * $zeroOffsetY})
+            calc(56.5px * #{$zeroOffsetX} + #{$tile-padding * $zeroOffsetX}),
+            calc(56.5px * #{$zeroOffsetY} + #{$tile-padding * $zeroOffsetY})
           );
         }
       }
@@ -129,9 +125,11 @@ $tile-padding: 15px;
     font-size: 55px;
     line-height: 100px;
 
-    @media (max-width: 639px) {
-      width: 97px;
-      height: 97px;
+    @media (max-width: 520px) {
+      width: 56.5px;
+      height: 56.5px;
+      font-size: 24px;
+      line-height: 56px;
     }
 
     &.pulse {

@@ -1,8 +1,9 @@
 .game-arena-container {
   height: 500px;
 
-  @media (max-width: 639px) {
-    height: 465px;
+  @media (max-width: 520px) {
+    height: 300px;
+    margin-bottom: 55px;
   }
 
   &.column {
@@ -40,9 +41,9 @@
         margin-right: 0;
       }
 
-      @media (max-width: 639px) {
-        width: 97px;
-        height: 97px;
+      @media (max-width: 520px) {
+        width: 56.5px;
+        height: 56.5px;
       }
     }
   }
@@ -84,6 +85,12 @@
       text-transform: none;
       line-height: 40px;
       color: #f9f6f2;
+    }
+
+    @media (max-width: 520px) {
+      .text {
+        font-size: 33px;
+      }
     }
   }
 }
