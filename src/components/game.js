@@ -1,43 +1,23 @@
 /* eslint-disable operator-linebreak */
 /* eslint-disable no-continue */
-/* eslint-disable no-mixed-operators */
 import React, { Component } from 'react';
 import uuidv4 from 'uuid/v4';
 import cloneDeep from 'lodash.clonedeep';
 
 import GameInfo from './game-info/game-info';
 import Grid from './grid/grid';
+import {
+  randomTileList,
+  NUMOFCELLS,
+  controlKeys,
+  //functions
+  generateRandomNo,
+  get2DCoordinate,
+  getGameState,
+  saveGameState,
+} from './utils';
 
 import './game.scss';
-
-const randomTileList = [2, 2, 2, 4, 2, 2, 4, 2, 2, 4];
-const COLOUMNSIZE = 4;
-const NUMOFCELLS = 16;
-
-const generateRandomNo = n => Math.ceil(Math.random() * n);
-
-const get2DCoordinate = n => {
-  const x = n % COLOUMNSIZE;
-  const y = (n - x) / COLOUMNSIZE;
-
-  return {
-    x,
-    y,
-  };
-};
-
-const get1DCoordinate = ({ x, y }) => x + y * COLOUMNSIZE;
-
-const controlKeys = {
-  37: 'left',
-  39: 'right',
-  38: 'up',
-  40: 'down',
-  65: 'left',
-  68: 'right',
-  87: 'up',
-  83: 'down',
-};
 
 //                                           X
 // +---------------+                +-------------------+
@@ -62,6 +42,8 @@ class Game extends Component {
     this.state = {
       tiles: [],
       gameOver: false,
+      gameWon: false,
+      highScore: 0,
       checkGameOver: false,
       numberOfChecks: 0,
       numberOfDirectionsToMove: 0,
@@ -70,14 +52,23 @@ class Game extends Component {
   }
 
   componentDidMount() {
-    this.initializeNewGrid();
     window.addEventListener('keydown', this.handleKeyDown.bind(this));
+    const savedGameState = getGameState();
+
+    if (savedGameState && savedGameState.gameState) {
+      this.setState({
+        ...savedGameState.gameState,
+      });
+    } else {
+      this.initializeNewGrid();
+    }
   }
 
   componentDidUpdate() {
     if (this.state.checkGameOver) {
       this.checkIfGameOver();
     }
+    saveGameState(this.state);
   }
 
   componentWillUnmount() {
@@ -130,6 +121,16 @@ class Game extends Component {
 
     if (Object.keys(controlKeys).includes(e.keyCode.toString())) {
       this.insertNewTileIntoGrid();
+    }
+
+    this.checkIfPlayerWon();
+  }
+
+  checkIfPlayerWon() {
+    for (const tile of this.state.tiles) {
+      if (tile && tile.value === 2048) {
+        this.setState({ gameWon: true });
+      }
     }
   }
 
@@ -243,6 +244,10 @@ class Game extends Component {
   updateScores(score) {
     this.setState(state => ({
       score: state.score + score,
+      highScore:
+        state.highScore > state.score + score
+          ? state.highScore
+          : state.score + score,
     }));
   }
 
@@ -579,17 +584,22 @@ class Game extends Component {
   }
 
   render() {
-    const { tiles, gameOver, score } = this.state;
+    const { tiles, gameOver, score, gameWon, highScore } = this.state;
 
     return (
       <div className="container">
         <div className="row">
-          <GameInfo score={score} restartGame={() => this.restartGame()} />
+          <GameInfo
+            score={score}
+            highScore={highScore}
+            restartGame={() => this.restartGame()}
+          />
         </div>
         <div className="row">
           <Grid
             tiles={tiles}
             gameOver={gameOver}
+            gameWon={gameWon}
             restartGame={() => this.restartGame()}
           />
         </div>

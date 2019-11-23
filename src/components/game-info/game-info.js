@@ -12,7 +12,7 @@ export default function GameInfo(props) {
         <div className="game-scores-container">
           <div className="best-score">
             <span>BEST</span>
-            <span>1296</span>
+            <span>{props.highScore}</span>
           </div>
           <div className="score">
             <span>SCORE</span>
@@ -38,5 +38,6 @@ export default function GameInfo(props) {
 
 GameInfo.propTypes = {
   score: PropTypes.number.isRequired,
+  highScore: PropTypes.number.isRequired,
   restartGame: PropTypes.func.isRequired,
 };

@@ -9,11 +9,12 @@ class Grid extends Component {
   static propTypes = {
     tiles: PropTypes.array.isRequired,
     gameOver: PropTypes.bool.isRequired,
+    gameWon: PropTypes.bool.isRequired,
     restartGame: PropTypes.func.isRequired,
   };
 
   render() {
-    const { tiles, gameOver, restartGame } = this.props;
+    const { tiles, gameOver, restartGame, gameWon } = this.props;
     const gameCells = [1, 2, 3, 4].map(key => (
       <div className="rowe" key={key}>
         <div className="column column-21" />
@@ -35,10 +36,11 @@ class Grid extends Component {
             }
           })}
         </div>
-        {gameOver && (
+        {(gameOver || gameWon) && (
           <div className="game-over-container">
             <div className="game-over">
-              <div className="text">Game over!</div>
+              {gameOver && <div className="text">Game over!</div>}
+              {gameWon && <div className="text">You won the game!</div>}
               <button
                 type="button"
                 className="button"
