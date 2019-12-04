@@ -614,6 +614,20 @@ class Game extends Component {
             restartGame={() => this.restartGame()}
           />
         </div>
+        <div className="row">
+          <div className="column column-100 description">
+            <div className="desktop">
+              <strong>HOW TO PLAY</strong>: Use your arrow keys to move the
+              tiles. When two tiles with the same number touch, they merge into
+              one!
+            </div>
+            <div className="mobile">
+              <strong>HOW TO PLAY</strong>: Swipe up, down, left or right in the
+              box to move the tiles. When two tiles with the same number touch,
+              they merge into one!
+            </div>
+          </div>
+        </div>
       </div>
     );
   }
